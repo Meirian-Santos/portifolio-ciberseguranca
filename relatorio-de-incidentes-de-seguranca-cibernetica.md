@@ -2,60 +2,38 @@
 
 ## Cenário:
 
-## Parte![cenario redes](https://github.com/user-attachments/assets/0547199a-aa31-41aa-834f-432851aab2cd)
+## ![cenario redes](https://github.com/user-attachments/assets/0547199a-aa31-41aa-834f-432851aab2cd)
 
- 1: Resumo do Problema Encontrado no DNS e no ICMP
+ ## **1. Resumo do Problema**
 
-### Registro de Tráfego
+Durante a análise de tráfego de rede utilizando `tcpdump`, identificamos problemas na resolução de DNS para o domínio **yummyrecipesforme.com**. O protocolo UDP foi utilizado para enviar solicitações ao servidor DNS, mas recebeu como resposta mensagens de erro ICMP indicando que a **porta UDP 53 estava inacessível**. 
 
-O protocolo **UDP** revela que:
+Cada evento de log contém:
+- **Duas primeiras linhas**: Solicitação UDP enviada do navegador para o servidor DNS.
+- **Terceira e quarta linhas**: Resposta ICMP indicando erro (**"udp port 53 unreachable"**).
 
-Isso se baseia nos resultados da análise de rede, que mostram que a resposta de **eco ICMP** retornou a mensagem de erro:
-
-> `udp port 53 unreachable` (porta UDP 53 inacessível)
-
-A porta indicada na mensagem de erro é usada para:
-
-- O serviço **DNS** (Domain Name System).
-
-O problema mais provável é:
-
-- O **servidor DNS** de destino **não está acessível**, impossibilitando a resolução do domínio `www.yummyrecipesforme.com`.
-
-## Parte 2: Análise dos Dados e Causa do Incidente
-
-### Hora do Incidente
-
-- **Horário:** 13h24, 32,192571 segundos.
-
-### Como a Equipe de TI Tomou Conhecimento do Incidente
-
-- Clientes relataram que **não conseguiram acessar o site** `www.yummyrecipesforme.com`.
-- O erro retornado foi **"porta de destino inalcançável"**.
-- O analista tentou acessar o site e **recebeu o mesmo erro**.
-- Para investigar, utilizou a ferramenta **tcpdump** para capturar pacotes de rede.
-
-### Ações Tomadas pelo Departamento de TI
-
-1. **Captura de Pacotes** usando `tcpdump` enquanto tentava acessar o site.
-2. **Análise do Tráfego de Rede**, observando pacotes **UDP e ICMP**.
-3. **Identificação do Problema**:
-   - O navegador enviou uma **consulta DNS via UDP** para obter o endereço IP do domínio.
-   - O servidor DNS **respondeu com um erro ICMP**, informando que **a porta 53 estava inacessível**.
-4. **Reportou o problema** aos engenheiros de segurança para análise mais aprofundada.
-
-### Descobertas Principais
-
-- **Endereço IP de Origem:** `192.51.100.15` (computador do analista).
-- **Endereço IP de Destino:** `203.0.113.2` (servidor DNS).
-- **Mensagem de erro capturada:** `ICMP 203.0.113.2 - udp port 53 unreachable`.
-- **Conclusão:** O **servidor DNS não está acessível**, impedindo a resolução do domínio.
-
-### Causa Provável do Incidente
-
-- **Falha no servidor DNS**: O serviço DNS pode estar **desligado, mal configurado ou bloqueado**.
-- **Problema de conectividade na rede**: O tráfego UDP pode estar **sendo filtrado ou bloqueado por um firewall**.
+A porta **53** é essencial para a comunicação DNS, e os erros identificados indicam que o servidor DNS não está respondendo adequadamente. O uso do símbolo **"A?"** na requisição DNS e a presença de flags na resposta UDP reforçam a existência de falhas na resolução do domínio.
 
 ---
 
-📌 *Este relatório foi gerado como parte de um estudo sobre análise de tráfego de rede e incidentes de segurança cibernética.*
+## **2. Análise e Causa do Incidente**
+
+O incidente ocorreu **às 13h24**, quando clientes da organização relataram que receberam a mensagem **"destination port unreachable"** ao tentar acessar o site **yummyrecipesforme.com**. A equipe de cibersegurança foi acionada para investigar e restaurar o acesso ao serviço.
+
+Utilizando a ferramenta **tcpdump**, confirmamos que a porta **53 estava inacessível**. As possíveis causas incluem:
+- O **servidor DNS pode estar fora do ar**.
+- O **tráfego DNS pode estar sendo bloqueado por um firewall**.
+- Um **ataque de negação de serviço (DoS) pode ter sobrecarregado o servidor DNS**.
+
+### **Plano de Ação**
+
+Para solucionar o problema, as próximas etapas incluem:
+1. **Verificar a disponibilidade do servidor DNS**.
+2. **Analisar regras de firewall para identificar bloqueios na porta 53**.
+3. **Investigar logs do servidor para verificar sinais de ataque DoS**.
+4. **Redirecionar temporariamente o tráfego DNS para um servidor alternativo**.
+5. **Implementar medidas de mitigação contra futuros ataques DoS**.
+
+A investigação segue em andamento para restaurar a operação normal do serviço o mais rápido possível.
+
+---
