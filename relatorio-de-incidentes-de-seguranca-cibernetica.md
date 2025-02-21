@@ -1,6 +1,10 @@
 # Relatório de Incidentes de Segurança Cibernética
 
-## Parte 1: Resumo do Problema Encontrado no DNS e no ICMP
+## Cenário:
+
+## Parte![cenario redes](https://github.com/user-attachments/assets/0547199a-aa31-41aa-834f-432851aab2cd)
+
+ 1: Resumo do Problema Encontrado no DNS e no ICMP
 
 ### Registro de Tráfego
 
